@@ -7,7 +7,11 @@ package mx.itson.morgana.ui;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
+import mx.itson.morgana.entidades.Comentario;
 import mx.itson.morgana.entidades.Video;
 
 /**
@@ -34,6 +38,10 @@ public class Main extends javax.swing.JFrame {
 
         btnBuscar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        lblTitulo = new javax.swing.JLabel();
+        lblDescripcion = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblComentarios = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -46,6 +54,24 @@ public class Main extends javax.swing.JFrame {
 
         jLabel1.setText("Seleccione el archivo de origen de datos:");
 
+        lblTitulo.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
+        lblTitulo.setText("Título");
+
+        lblDescripcion.setText("Descripción");
+
+        tblComentarios.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Fecha", "Usuario", "Comentario"
+            }
+        ));
+        jScrollPane1.setViewportView(tblComentarios);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -53,9 +79,12 @@ public class Main extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBuscar)
-                    .addComponent(jLabel1))
-                .addContainerGap(189, Short.MAX_VALUE))
+                    .addComponent(jLabel1)
+                    .addComponent(lblTitulo)
+                    .addComponent(lblDescripcion))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -64,7 +93,13 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnBuscar)
-                .addContainerGap(228, Short.MAX_VALUE))
+                .addGap(38, 38, 38)
+                .addComponent(lblTitulo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblDescripcion)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(251, Short.MAX_VALUE))
         );
 
         pack();
@@ -84,7 +119,23 @@ public class Main extends javax.swing.JFrame {
                 
                 Video video = new Video().deserializar(contenido);
                 
-                System.out.print(contenido);
+                lblTitulo.setText(video.getTitulo());
+                lblDescripcion.setText(video.getDescripcion());
+                
+                DefaultTableModel model = (DefaultTableModel) tblComentarios.getModel();
+                model.setRowCount(0);
+                
+                DateFormat formatoFecha = 
+                        new SimpleDateFormat("d 'de' MMMM 'de' yyyy");
+                
+                for(Comentario c : video.getComentarios()){
+                    model.addRow(new Object[] { 
+                        formatoFecha.format(c.getFecha()), 
+                        c.getUsuario().getNombre(), 
+                        c.getCuerpo() } );
+                }
+                
+                ///System.out.print(contenido);
             }
         } catch (Exception ex) {
             System.err.print("Ocurrió un error: " + ex.getMessage());
@@ -129,5 +180,9 @@ public class Main extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblDescripcion;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JTable tblComentarios;
     // End of variables declaration//GEN-END:variables
 }
